@@ -1,4 +1,4 @@
-# 20-actors/suji — CLAUDE.md
+#  — CLAUDE.md
 
 ## Identity
 
@@ -52,15 +52,15 @@ tazuna force-class boundary).
 ## Architecture
 
 ```
-methods/  segment.py   anthropometric sagittal chain (de Leva/Winter)
-          posture.py   laptop workstation → joint angles
-          load.py      static inverse dynamics (RNEA gravity); cervical VALIDATED vs Hansraj 2014
-          muscle.py    Hill-type moment-arm → %MVC (緊張)
-          strain.py    Rohmert sustained-isometric dose → stiffness (強張り)
-          analyze.py   end-to-end laptop posture comparison report
-          kami_biomech_bridge.py   kami-genesis/Isaac articulation (wit/kami-biomech.wit)
-cells/    segment_build · posture_resolve · load_solve+strain_accumulate(CODED) · strain_accumulate · ergonomic_compare
-lex/      bodyModel · postureScenario · jointLoad · muscleTension · strainReport · ergonomicComparison
+src/suji/methods/  segment.cljc   anthropometric sagittal chain (de Leva/Winter)
+          posture.cljc   laptop workstation → joint angles
+          load.cljc      static inverse dynamics (RNEA gravity); cervical VALIDATED vs Hansraj 2014
+          muscle.cljc    Hill-type moment-arm → %MVC (緊張)
+          strain.cljc    Rohmert sustained-isometric dose → stiffness (強張り)
+          analyze.cljc   end-to-end laptop posture comparison report
+          kami_biomech_bridge.cljc   kami-genesis/Isaac articulation (wire/wit/kami-biomech.wit)
+data/cells/    segment_build · posture_resolve · load_solve+strain_accumulate(CODED) · strain_accumulate · ergonomic_compare
+data/lex/      bodyModel · postureScenario · jointLoad · muscleTension · strainReport · ergonomicComparison
 kotoba/   schema.edn (no clinical ident) · seed.edn (:representative 3-posture set)
 ```
 
@@ -70,17 +70,17 @@ raises at R0 until Council activation.
 
 ## Validation
 
-- Cervical load reproduces **Hansraj (2014)** within ~10% (test_load.py).
+- Cervical load reproduces **Hansraj (2014)** within ~10% (test_load.cljc).
 - Hill muscle %MVC ∈ [0,100); Rohmert endurance falls with load, ∞ below ~8% MVC (the classic 15%
-  sustainability threshold) (test_muscle_strain.py).
-- G1/G3/G10 enforced structurally over the parsed lexicons + schema (test_charter_invariants.py).
-- bridge static moments ≡ load.py moments; manifest ↔ disk drift-locked (test_bridge_consistency.py).
+  sustainability threshold) (test_muscle_strain.cljc).
+- G1/G3/G10 enforced structurally over the parsed lexicons + schema (test_charter_invariants.cljc).
+- bridge static moments ≡ load.cljc moments; manifest ↔ disk drift-locked (test_bridge_consistency.cljc).
 
 ## Run
 
 ```bash
-./run_tests.sh                 # all auto-discovered cljc test suites (currently 43 tests)
-python3 methods/analyze.py     # writes out/posture-report.md
+bb test                 # all auto-discovered cljc test suites (currently 43 tests)
+bb -m suji.methods.analyze     # writes generated posture report
 ```
 
 ## Honest R0

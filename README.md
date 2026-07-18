@@ -19,13 +19,13 @@ kizashi senses  →  suji simulates the loads  →  mitate diagnoses  →  iyash
 ## What it computes
 
 ```
-laptop workstation ──▶ posture (joint angles)        posture.py
-                   ──▶ static inverse dynamics        load.py     ← kami-genesis PlanarChain
+laptop workstation ──▶ posture (joint angles)        posture.cljc
+                   ──▶ static inverse dynamics        load.cljc     ← kami-genesis PlanarChain
                        (RNEA gravity term)                          Featherstone statics
-                   ──▶ cervical compressive load      load.py     ← VALIDATED vs Hansraj 2014
-                   ──▶ muscle %MVC  (緊張 / tension)   muscle.py   ← Hill-type moment-arm
-                   ──▶ stiffness index (強張り)        strain.py   ← Rohmert sustained dose
-                   ──▶ A/B/C ergonomic comparison      analyze.py
+                   ──▶ cervical compressive load      load.cljc     ← VALIDATED vs Hansraj 2014
+                   ──▶ muscle %MVC  (緊張 / tension)   muscle.cljc   ← Hill-type moment-arm
+                   ──▶ stiffness index (強張り)        strain.cljc   ← Rohmert sustained dose
+                   ──▶ A/B/C ergonomic comparison      analyze.cljc
 ```
 
 The **skeleton** is a sagittal articulated segment chain (head → cervical → thorax → lumbar + arm)
@@ -35,7 +35,7 @@ solves (ADR-2605311500/1800). The **bones load** is the static special case of F
 moment-arm model (force = moment / arm; %MVC = force / F_max). **強張り** is the Rohmert
 sustained-isometric dose accumulated over a work session.
 
-### The answer (`python3 methods/analyze.py`)
+### The answer (`bb -m suji.methods.analyze`)
 
 | workstation | head flexion | neck load | ×head-weight | worst-muscle stiffness |
 |---|---|---|---|---|
@@ -51,13 +51,13 @@ ranking of people. Mechanism only; a clinician owns any health interpretation.)
 
 The cervical leg reproduces the published forward-head-posture loads of Hansraj, *Surgical
 Technology International* 25 (the "60-lb tech-neck" study): neutral ≈ head weight, rising to ~5× at
-60° flexion. `methods/test_load.py::test_reproduces_hansraj_table` asserts the multipliers track the
+60° flexion. `src/suji/methods/test_load.cljc::test_reproduces_hansraj_table` asserts the multipliers track the
 published table (0°→1× … 60°→5×) within 10%.
 
 ## Isaac Sim / kami-genesis
 
-`wit/kami-biomech.wit` is the articulation contract a kami-genesis `PlanarChain` / nv-compat
-`isaacsim.core.api` `Articulation` would implement; `methods/kami_biomech_bridge.py` builds the
+`wire/wit/kami-biomech.wit` is the articulation contract a kami-genesis `PlanarChain` / nv-compat
+`isaacsim.core.api` `Articulation` would implement; `src/suji/methods/kami_biomech_bridge.cljc` builds the
 link/joint/gravity spec and returns the same static joint moments the full RNEA backend would.
 **Honest R0**: the `40-engine/kami-engine` submodule is unpopulated here, so this is the WIT
 contract + Python reference, not a compiled backend (the `noroshi` pattern). No live actuation — the
@@ -82,17 +82,17 @@ body model is passive.
 ## Layout
 
 ```
-methods/   segment · posture · load · muscle · strain · analyze · datoms · kami_biomech_bridge  (+ tests)
-cells/     segment_build · posture_resolve · load_solve(coded) · strain_accumulate(coded) · ergonomic_compare
-lex/       bodyModel · postureScenario · jointLoad · muscleTension · strainReport · ergonomicComparison
+src/suji/methods/   segment · posture · load · muscle · strain · analyze · datoms · kami_biomech_bridge  (+ tests)
+data/cells/     segment_build · posture_resolve · load_solve(coded) · strain_accumulate(coded) · ergonomic_compare
+data/lex/       bodyModel · postureScenario · jointLoad · muscleTension · strainReport · ergonomicComparison
 kotoba/    schema.edn · seed.edn      wit/  kami-biomech.wit      out/  posture-report.md · posture-datoms.edn
 ```
 
 ## Run
 
 ```bash
-./run_tests.sh                 # 45 tests (31 methods + 14 cells) + analyze smoke
-python3 methods/analyze.py     # the laptop-posture report (writes out/posture-report.md)
+bb test                 # 45 tests (31 methods + 14 cells) + analyze smoke
+bb -m suji.methods.analyze     # the laptop-posture report (writes generated posture report)
 ```
 
 **Honest R0**: design + runnable physics + a validated cervical model. Anthropometry / muscle /
